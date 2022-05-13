@@ -1,6 +1,6 @@
 // Write your "projects" router here!
 const express = require("express");
-const { get, insert } = require("./projects-model");
+const { get, insert, update } = require("./projects-model");
 const { validateProjectId } = require("./projects-middleware");
 const projectRouter = express.Router();
 
@@ -57,6 +57,22 @@ projectRouter.post("/", (req, res) => {
 //   - Returns the updated project as the body of the response.
 //   - If there is no project with the given `id` it responds with a status code 404.
 //   - If the request body is missing any of the required fields it responds with a status code 400.
+// needs completed,  description and name,  may have to check if completed is eqaual to boolean
+// verify id
+projectRouter.put("/:id", validateProjectId, (req, res) => {
+  const { description, name, completed } = req.body;
+  if (typeof completed !== "boolean" || !description || !name) {
+    res.status(400).json({ message: "Completed, description and name required!!!" });
+  } else {
+    update(req.params.id, req.body)
+      .then((upPost) => {
+        res.status(200).json(upPost);
+      })
+      .catch(() => {
+        res.status(500).json({ message: "Project did not put in new data" });
+      });
+  }
+});
 
 // - [ ] `[DELETE] /api/projects/:id`
 //   - Returns no response body.
