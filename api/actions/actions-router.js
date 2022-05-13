@@ -1,6 +1,6 @@
 // Write your "actions" router here!
 const express = require("express");
-const { get, insert, update } = require("./actions-model");
+const { get, insert, update, remove } = require("./actions-model");
 const { validateActionId } = require("./actions-middlware");
 const actionRouter = express.Router();
 // - [ ] `[GET] /api/actions`
@@ -73,4 +73,14 @@ actionRouter.put("/:id", validateActionId, (req, res) => {
 // - [ ] `[DELETE] /api/actions/:id`
 //   - Returns no response body.
 //   - If there is no action with the given `id` it responds with a status code 404.
+actionRouter.delete("/:id", validateActionId, (req, res) => {
+  remove(req.params.id)
+    .then((delAct) => {
+      res.status(200).json(delAct);
+    })
+    .catch(() => {
+      res.status(500).json({ message: "Action did not delete" });
+    });
+});
+
 module.exports = actionRouter;
