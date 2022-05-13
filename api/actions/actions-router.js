@@ -1,6 +1,6 @@
 // Write your "actions" router here!
 const express = require("express");
-const { get, insert } = require("./actions-model");
+const { get, insert, update } = require("./actions-model");
 const { validateActionId } = require("./actions-middlware");
 const actionRouter = express.Router();
 // - [ ] `[GET] /api/actions`
@@ -55,6 +55,20 @@ actionRouter.post("/", (req, res) => {
 //   - Returns the updated action as the body of the response.
 //   - If there is no action with the given `id` it responds with a status code 404.
 //   - If the request body is missing any of the required fields it responds with a status code 400.
+actionRouter.put("/:id", validateActionId, (req, res) => {
+  const { description, notes, completed, project_id } = req.body;
+  if (typeof completed !== "boolean" || !description || !notes || !project_id) {
+    res.status(400).json({ message: "Completed, description, notes, project_id required!!!" });
+  } else {
+    update(req.params.id, req.body)
+      .then((upPost) => {
+        res.status(200).json(upPost);
+      })
+      .catch(() => {
+        res.status(500).json({ message: "New data not added" });
+      });
+  }
+});
 
 // - [ ] `[DELETE] /api/actions/:id`
 //   - Returns no response body.
