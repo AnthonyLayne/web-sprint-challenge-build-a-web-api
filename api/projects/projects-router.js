@@ -1,6 +1,6 @@
 // Write your "projects" router here!
 const express = require("express");
-const { get, insert, update } = require("./projects-model");
+const { get, insert, update, remove, getProjectActions } = require("./projects-model");
 const { validateProjectId } = require("./projects-middleware");
 const projectRouter = express.Router();
 
@@ -77,8 +77,27 @@ projectRouter.put("/:id", validateProjectId, (req, res) => {
 // - [ ] `[DELETE] /api/projects/:id`
 //   - Returns no response body.
 //   - If there is no project with the given `id` it responds with a status code 404.
+projectRouter.delete("/:id", validateProjectId, (req, res) => {
+  remove(req.params.id)
+    .then((delProj) => {
+      res.status(200).json(delProj);
+    })
+    .catch(() => {
+      res.status(500).json({ message: "Project did not delete" });
+    });
+});
 
 // - [ ] `[GET] /api/projects/:id/actions`
 //   - Returns an array of actions (could be empty) belonging to a project with the given `id`.
 //   - If there is no project with the given `id` it responds with a status code 404.
+projectRouter.get("/:id/actions", validateProjectId, (req, res) => {
+  getProjectActions(req.params.id)
+    .then((projAction) => {
+      res.status(200).json(projAction);
+    })
+    .catch(() => {
+      res.status(500).json({ message: "Couldn't get actions" });
+    });
+});
+
 module.exports = projectRouter;
