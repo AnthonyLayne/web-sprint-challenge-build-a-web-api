@@ -1,6 +1,6 @@
 // Write your "projects" router here!
 const express = require("express");
-const { get } = require("./projects-model");
+const { get, insert } = require("./projects-model");
 const { validateProjectId } = require("./projects-middleware");
 const projectRouter = express.Router();
 
@@ -37,6 +37,21 @@ projectRouter.get("/:id", validateProjectId, (req, res) => {
 // - [ ] `[POST] /api/projects`
 //   - Returns the newly created project as the body of the response.
 //   - If the request body is missing any of the required fields it responds with a status code 400.
+// Needs Description and Name in the body
+projectRouter.post("/", (req, res) => {
+  const { description, name } = req.body;
+  if (!description || !name) {
+    res.status(400).json({ message: "Description and name required!!!" });
+  } else {
+    insert(req.body)
+      .then((newPost) => {
+        res.status(201).json(newPost);
+      })
+      .catch(() => {
+        res.status(500).json({ message: "Project did not post" });
+      });
+  }
+});
 
 // - [ ] `[PUT] /api/projects/:id`
 //   - Returns the updated project as the body of the response.
