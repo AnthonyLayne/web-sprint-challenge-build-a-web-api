@@ -1,6 +1,7 @@
 // Write your "projects" router here!
 const express = require("express");
 const { get } = require("./projects-model");
+const { validateProjectId } = require("./projects-middleware");
 const projectRouter = express.Router();
 
 // -  `[GET] /api/projects`
@@ -21,6 +22,17 @@ projectRouter.get("/", (req, res) => {
 // - [ ] `[GET] /api/projects/:id`
 //   - Returns a project with the given `id` as the body of the response.
 //   - If there is no project with the given `id` it responds with a status code 404.
+projectRouter.get("/:id", validateProjectId, (req, res) => {
+  get(req.params.id)
+    .then((projects) => {
+      res.status(200).json(projects);
+    })
+    .catch(() => {
+      res.status(404).json({
+        message: "No existing project with that ID",
+      });
+    });
+});
 
 // - [ ] `[POST] /api/projects`
 //   - Returns the newly created project as the body of the response.
